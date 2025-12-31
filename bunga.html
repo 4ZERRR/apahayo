@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garden for Dul 🌸</title>
+    <style>
+        :root {
+            --bg-color: #0b0d17;
+            --stem-color: #1a4731;
+            --pink-petal: #ff6d9d;
+            --purple-petal: #a385ff;
+            --blue-petal: #63d6ff;
+            --yellow-petal: #ffeb3b;
+            --orange-petal: #ff9800;
+        }
+
+        *, *::after, *::before {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .night {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent, rgba(0,0,0,0.6));
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .garden {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 2vmin;
+        }
+
+        /* Base Flower Style */
+        .flower {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+            z-index: 10;
+        }
+
+        .flower__line {
+            width: 1vmin;
+            background-image: linear-gradient(to top, rgba(0,0,0,0.4), var(--stem-color));
+            border-radius: 4vmin;
+        }
+
+        .flower__leafs {
+            position: relative;
+            animation: bloom 2s ease-out forwards;
+        }
+
+        .leaf {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 7vmin;
+            height: 10vmin;
+            border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+            transform-origin: bottom center;
+            opacity: 0.9;
+            box-shadow: inset 0 0 2vmin rgba(255,255,255,0.3);
+        }
+
+        /* Petal Rotations */
+        .l1 { transform: translate(-50%, 0) rotate(0deg); }
+        .l2 { transform: translate(-50%, 0) rotate(45deg); }
+        .l3 { transform: translate(-50%, 0) rotate(90deg); }
+        .l4 { transform: translate(-50%, 0) rotate(135deg); }
+        .l5 { transform: translate(-50%, 0) rotate(180deg); }
+        .l6 { transform: translate(-50%, 0) rotate(225deg); }
+        .l7 { transform: translate(-50%, 0) rotate(270deg); }
+        .l8 { transform: translate(-50%, 0) rotate(315deg); }
+
+        /* Flower Color Types */
+        .type-pink .leaf { background: var(--pink-petal); background-image: linear-gradient(to top, #ffacc5, var(--pink-petal)); }
+        .type-purple .leaf { background: var(--purple-petal); background-image: linear-gradient(to top, #c3b1ff, var(--purple-petal)); }
+        .type-blue .leaf { background: var(--blue-petal); background-image: linear-gradient(to top, #a1e7ff, var(--blue-petal)); }
+        .type-orange .leaf { background: var(--orange-petal); background-image: linear-gradient(to top, #ffcc80, var(--orange-petal)); }
+        .type-yellow .leaf { background: var(--yellow-petal); background-image: linear-gradient(to top, #fff59d, var(--yellow-petal)); }
+
+        /* Grass Elements */
+        .grass {
+            position: absolute;
+            bottom: 0;
+            width: 0.5vmin;
+            height: 15vmin;
+            background-color: var(--stem-color);
+            border-radius: 1vmin;
+            transform-origin: bottom center;
+            z-index: 5;
+            opacity: 0.6;
+        }
+
+        /* Animations */
+        @keyframes bloom {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .sway { animation: swaying 5s ease-in-out infinite; }
+        @keyframes swaying {
+            0%, 100% { transform: rotate(-1.5deg); }
+            50% { transform: rotate(1.5deg); }
+        }
+
+        .firefly {
+            position: absolute;
+            width: 0.8vmin;
+            height: 0.8vmin;
+            background: #ffffbb;
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 8px #fdfd8a;
+            animation: drift 8s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-70vmin) translateX(30vmin); opacity: 0; }
+        }
+
+        .btn-back {
+            position: fixed; top: 20px; left: 20px; z-index: 1000;
+            padding: 8px 18px; background: rgba(255,255,255,0.1);
+            color: white; border: 1px solid white; border-radius: 20px;
+            text-decoration: none; font-family: sans-serif; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="night"></div>
+    <a href="index.html" class="btn-back">⬅ Kembali</a>
+
+    <div class="garden" id="garden">
+        </div>
+
+    <script>
+        const garden = document.getElementById('garden');
+        const colors = ['pink', 'purple', 'blue', 'orange', 'yellow'];
+        
+        // Generate 12 Flowers
+        for (let i = 0; i < 12; i++) {
+            const flower = document.createElement('div');
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const height = 25 + Math.random() * 30; // Random height between 25-55vmin
+            const left = 5 + Math.random() * 90; // Random position across screen
+            const delay = Math.random() * 2;
+            const scale = 0.5 + Math.random() * 0.5;
+
+            flower.className = `flower type-${color} sway`;
+            flower.style.left = `${left}%`;
+            flower.style.animationDelay = `${delay}s`;
+            flower.style.bottom = `2vmin`;
+
+            flower.innerHTML = `
+                <div class="flower__leafs" style="transform: scale(${scale});">
+                    <div class="leaf l1"></div><div class="leaf l2"></div>
+                    <div class="leaf l3"></div><div class="leaf l4"></div>
+                    <div class="leaf l5"></div><div class="leaf l6"></div>
+                    <div class="leaf l7"></div><div class="leaf l8"></div>
+                </div>
+                <div class="flower__line" style="height: ${height}vmin;"></div>
+            `;
+            garden.appendChild(flower);
+        }
+
+        // Generate 30 Grass blades
+        for (let i = 0; i < 30; i++) {
+            const grass = document.createElement('div');
+            grass.className = 'grass sway';
+            grass.style.left = `${Math.random() * 100}%`;
+            grass.style.height = `${5 + Math.random() * 15}vmin`;
+            grass.style.animationDelay = `${Math.random() * 3}s`;
+            garden.appendChild(grass);
+        }
+
+        // Generate 10 Fireflies
+        for (let i = 0; i < 10; i++) {
+            const firefly = document.createElement('div');
+            firefly.className = 'firefly';
+            firefly.style.left = `${Math.random() * 100}%`;
+            firefly.style.bottom = `${10 + Math.random() * 30}vmin`;
+            firefly.style.animationDelay = `${Math.random() * 5}s`;
+            garden.appendChild(firefly);
+        }
+    </script>
+</body>
+</html>
